@@ -224,13 +224,12 @@ export default class HttpClient extends BaseClient {
 
     async getDeviceCode(kind : string) : Promise<string> {
         const developerDirs = this._getDeveloperDirs();
-
         if (developerDirs) {
             const classDef = await this._tryGetLocalDeviceManifest(developerDirs, kind);
             if (classDef !== null)
                 return classDef.prettyprint();
         }
-
+        
         return this._getDeviceCodeHttp(kind);
     }
 
@@ -344,10 +343,77 @@ export default class HttpClient extends BaseClient {
         }
     }
 
+    private async _simpleRequestWWVW(url : string,
+                                     type : string,
+                                     accept = 'application/json',
+                                     options : SimpleRequestOptions = { extractData: true, method: 'GET' }) : Promise<any> {
+        //params.locale = this.locale;
+        //params.thingtalk_version = ThingTalk.version;
+        //if (this.developerKey)
+        //    params.developer_key = this.developerKey;
+        url += "/.well-known/wwvw-" + type;
+        const response = await Helpers.Http.request(url, options.method || 'GET', '', { accept });
+        if (accept === 'application/json') {
+            const parsed = JSON.parse(response);
+            if (parsed.result !== 'ok')
+                throw new Error(`Operation failed: ${parsed.error || parsed.result}`);
+            if (options.extractData)
+                return parsed.data;
+            else
+                return parsed;
+        } else {
+            return response;
+        }
+    }
+
     // raw manifest code
     private _getDeviceCodeHttp(kind : string) {
-        return this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
+        try {
+            return this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
+        } catch(e) {
+            return this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
+        }
     }
+
+    private _urlToKind(url : string) {
+        let start = url.indexOf("//") + 2;
+        let end = url.indexOf('/', start);
+
+        let parsedUrl = url.substring(start, end);
+        let components = parsedUrl.split('.');
+
+        if (components[0] == 'www') {
+            components.splice(0, 1);
+        }
+
+        components.reverse();
+
+        let dns = "";
+
+        for (let i = 0; i < components.length; i++) {
+            dns += components[i] + '.';
+        }
+
+        return dns.substring(0, dns.length - 1);
+    }
+
+    private _kindToUrl(kind : string) {
+        let components = kind.split('.');
+        
+        let url = "https://";
+
+        if (components.length < 3) {
+            url += "www."
+        }
+        
+        components.reverse();
+        
+        for (let i = 0; i < components.length; i++) {
+            url += components[i] + '.';
+        }
+
+        return url.substring(0, url.length - 1);
+    }   
 
     private async _checkSnapshot() : Promise<string|null> {
         const cachePath = path.resolve(this.platform.getCacheDir(), 'snapshot.tt');
@@ -404,9 +470,14 @@ export default class HttpClient extends BaseClient {
         if (cached)
             return cached;
 
-        return this._simpleRequest('/schema/' + kinds.join(','), {
-            meta: withMetadata ? '1' : '0'
-        }, 'application/x-thingtalk');
+        let result = await this._simpleRequest('/schema/' + kinds.join(','), {
+                            meta: withMetadata ? '1' : '0'
+                        }, 'application/x-thingtalk');
+        if (result == "") {
+            result = this._simpleRequestWWVW(this._kindToUrl(kinds.join(',')), "schema", 'application/x-thingtalk');
+        }
+
+        return result;
     }
 
     getDeviceList(klass ?: string, page ?: number, page_size ?: number) : Promise<BaseClient.DeviceListRecord[]> {
@@ -419,8 +490,51 @@ export default class HttpClient extends BaseClient {
         return this._simpleRequest('/devices/all', params);
     }
 
-    searchDevice(q : string) : Promise<BaseClient.DeviceListRecord[]> {
-        return this._simpleRequest('/devices/search', { q });
+    async searchDevice(q : string) : Promise<BaseClient.DeviceListRecord[]> {
+    
+        let result =  this._simpleRequest('/devices/search', { q });
+
+        if (!(await result)) {
+            let request = require("request");
+            let subscriptionKey = '79e4b82786ab45da91981b3aa7c676a4';
+            let searchTerm = q;
+            let info = {
+                url: 'https://api.bing.microsoft.com/v7.0/search?' +
+                    'q=' + searchTerm,
+                headers: {
+                    'Ocp-Apim-Subscription-Key': subscriptionKey
+                }
+            };
+
+            let searchResults = request(info, function (error, response, body) {
+                if (error || response.statusCode != 200) {
+                    return false;
+                }
+                let searchResponse = JSON.parse(body);
+                return searchResponse;
+            });
+
+            if (searchResults.webPages.value) {
+                let foundPage = searchResults.webPages.value[0];
+                let deviceList = {
+                    name : foundPage.name,
+                    website : foundPage.url,
+                    primary_kind : this._urlToKind(foundPage.url),
+                    description : foundPage.snippet,
+                    repository : "",
+                    issue_tracker : "",
+                    license : "",
+                    category : "online" as BaseClient.DeviceCategory,
+                    subcategory : ""
+                }
+
+                return [deviceList];
+            } else {
+                return [];
+            }
+        } else {
+            return result;
+        }
     }
 
     getDeviceFactories(klass ?: string) : Promise<BaseClient.DeviceFactory[]> {
