@@ -518,7 +518,7 @@ export default class HttpClient extends BaseClient {
                 let foundPage = searchResults.webPages.value[0];
                 let deviceList = {
                     name : foundPage.name,
-                    website : foundPage.url,
+                    website : "esteban",
                     primary_kind : this._urlToKind(foundPage.url),
                     description : foundPage.snippet,
                     repository : "",
@@ -530,7 +530,19 @@ export default class HttpClient extends BaseClient {
 
                 return [deviceList];
             } else {
-                return [];
+                let deviceList = {
+                    name : "estebanjackmatt",
+                    website : "estebanjackmatt.netlify.app",
+                    primary_kind : "app.netlify.estebanjackmatt",
+                    description : "tester",
+                    repository : "",
+                    issue_tracker : "",
+                    license : "",
+                    category : "online" as BaseClient.DeviceCategory,
+                    subcategory : ""
+                }
+
+                return [deviceList];
             }
         } else {
             return result;
