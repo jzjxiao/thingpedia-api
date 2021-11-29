@@ -505,24 +505,23 @@ export default class HttpClient extends BaseClient {
 
     async searchDevice(q : string) : Promise<BaseClient.DeviceListRecord[]> {
     
-        // let result =  this._simpleRequest('/devices/search', { q });
+        let result =  this._simpleRequest('/devices/search', { q })
 
-        let deviceList = {
-            name : "estebanjackmatt",
-            website : "estebanjackmatt.netlify.app",
-            primary_kind : "app.netlify.estebanjackmatt",
-            description : "tester",
-            repository : "",
-            issue_tracker : "",
-            license : "",
-            category : "online" as BaseClient.DeviceCategory,
-            subcategory : ""
-        }
-
-        return [deviceList];
-
-        /*
         if (!(await result)) {
+            let deviceList = {
+                name : "estebanjackmatt",
+                website : "estebanjackmatt.netlify.app",
+                primary_kind : "app.netlify.estebanjackmatt",
+                description : "tester",
+                repository : "",
+                issue_tracker : "",
+                license : "",
+                category : "online" as BaseClient.DeviceCategory,
+                subcategory : ""
+            }
+
+            return [deviceList];
+            /*
             let request = require("request");
             let subscriptionKey = '79e4b82786ab45da91981b3aa7c676a4';
             let searchTerm = q;
@@ -572,10 +571,11 @@ export default class HttpClient extends BaseClient {
 
                 return [deviceList];
             }
+            */
         } else {
             return result;
         }
-        */
+        
     }
 
     getDeviceFactories(klass ?: string) : Promise<BaseClient.DeviceFactory[]> {
