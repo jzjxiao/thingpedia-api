@@ -375,6 +375,7 @@ export default class HttpClient extends BaseClient {
         }
     }
 
+    /*
     private _urlToKind(url : string) {
         let start = url.indexOf("//") + 2;
         let end = url.indexOf('/', start);
@@ -396,6 +397,7 @@ export default class HttpClient extends BaseClient {
 
         return dns.substring(0, dns.length - 1);
     }
+    */
 
     private _kindToUrl(kind : string) {
         let components = kind.split('.');
