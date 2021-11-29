@@ -507,13 +507,7 @@ export default class HttpClient extends BaseClient {
     
         let result =  await this._simpleRequest('/devices/search', { q });
 
-        console.log("HELLOOOOOOOOO");
-        console.log(result);
-        console.log("hi");
-        console.log("hello");
-
-        if (!(result)) {
-            console.log("bruh");
+        if (result.length == 0) {
             let deviceList = {
                 name : "estebanjackmatt",
                 website : "estebanjackmatt.netlify.app",
