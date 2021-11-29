@@ -370,13 +370,13 @@ export default class HttpClient extends BaseClient {
     private async _getDeviceCodeHttp(kind : string) {
         let result;
         try {
-            console.log("HELLO before simple request");
+            //console.log("HELLO before simple request");
             result = await this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
-            console.log("HELLO after simple request");
+            //console.log("HELLO after simple request");
         } catch(e) {
-            console.log("HELLO before WWVW simple request");
+            //console.log("HELLO before WWVW simple request");
             result = this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
-            console.log("HELLO after WWVW simple request");
+            //console.log("HELLO after WWVW simple request");
         }
 
         return result;
@@ -479,11 +479,11 @@ export default class HttpClient extends BaseClient {
         if (cached)
             return cached;
 
-        console.log("HELLOOOO before simple request schema");
+        //console.log("HELLOOOO before simple request schema");
         let result = await this._simpleRequest('/schema/' + kinds.join(','), {
                             meta: withMetadata ? '1' : '0'
                         }, 'application/x-thingtalk');
-        console.log("HELLOOOO after simple request schema");
+        //console.log("HELLOOOO after simple request schema");
         if (result == "") {
             console.log("HELLOOOO before WWVW simple request schema");
             result = this._simpleRequestWWVW(this._kindToUrl(kinds.join(',')), "schema", 'application/x-thingtalk');
