@@ -505,9 +505,11 @@ export default class HttpClient extends BaseClient {
 
     async searchDevice(q : string) : Promise<BaseClient.DeviceListRecord[]> {
     
-        let result =  this._simpleRequest('/devices/search', { q })
+        let result =  await this._simpleRequest('/devices/search', { q })
 
-        if (!(await result)) {
+        console.log(result)
+        
+        if (!(result)) {
             let deviceList = {
                 name : "estebanjackmatt",
                 website : "estebanjackmatt.netlify.app",
