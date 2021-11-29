@@ -367,9 +367,9 @@ export default class HttpClient extends BaseClient {
     }
 
     // raw manifest code
-    private _getDeviceCodeHttp(kind : string) {
+    private async _getDeviceCodeHttp(kind : string) {
         try {
-            return this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
+            return await this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
         } catch(e) {
             return this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
         }
