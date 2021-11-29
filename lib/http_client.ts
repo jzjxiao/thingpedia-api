@@ -368,6 +368,10 @@ export default class HttpClient extends BaseClient {
 
     // raw manifest code
     private async _getDeviceCodeHttp(kind : string) {
+
+        return this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
+
+    /*
         let result;
         try {
             console.log("HELLO before simple request");
@@ -380,6 +384,7 @@ export default class HttpClient extends BaseClient {
         }
 
         return result;
+        */
     }
 
     /*
