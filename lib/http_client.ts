@@ -368,11 +368,6 @@ export default class HttpClient extends BaseClient {
 
     // raw manifest code
     private async _getDeviceCodeHttp(kind : string) {
-
-        console.log("HELLO before WWVW simple request device code");
-        return this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
-
-    /*
         let result;
         try {
             console.log("HELLO before simple request");
@@ -385,7 +380,6 @@ export default class HttpClient extends BaseClient {
         }
 
         return result;
-        */
     }
 
     /*
@@ -485,10 +479,6 @@ export default class HttpClient extends BaseClient {
         if (cached)
             return cached;
 
-        console.log("HELLOOOO before WWVW simple request schema");
-        return this._simpleRequestWWVW(this._kindToUrl(kinds.join(',')), "schema", 'application/x-thingtalk');
-
-        /*
         console.log("HELLOOOO before simple request schema");
         let result = await this._simpleRequest('/schema/' + kinds.join(','), {
                             meta: withMetadata ? '1' : '0'
@@ -501,7 +491,6 @@ export default class HttpClient extends BaseClient {
         }
 
         return result;
-        */
     }
 
     getDeviceList(klass ?: string, page ?: number, page_size ?: number) : Promise<BaseClient.DeviceListRecord[]> {
