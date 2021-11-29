@@ -485,9 +485,9 @@ export default class HttpClient extends BaseClient {
                         }, 'application/x-thingtalk');
         //console.log("HELLOOOO after simple request schema");
         if (result == "") {
-            console.log("HELLOOOO before WWVW simple request schema");
+            //console.log("HELLOOOO before WWVW simple request schema");
             result = this._simpleRequestWWVW(this._kindToUrl(kinds.join(',')), "schema", 'application/x-thingtalk');
-            console.log("HELLOOOO after WWVW simple request schema");
+            //console.log("HELLOOOO after WWVW simple request schema");
         }
 
         return result;
