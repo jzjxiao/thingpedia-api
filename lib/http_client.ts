@@ -370,9 +370,13 @@ export default class HttpClient extends BaseClient {
     private async _getDeviceCodeHttp(kind : string) {
         let result;
         try {
-             result = await this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
+            console.log("HELLO before simple request");
+            result = await this._simpleRequest('/devices/code/' + kind, {}, 'application/x-thingtalk');
+            console.log("HELLO after simple request");
         } catch(e) {
+            console.log("HELLO before WWVW simple request");
             result = this._simpleRequestWWVW(this._kindToUrl(kind), "manifest", 'application/x-thingtalk');
+            console.log("HELLO after WWVW simple request");
         }
 
         return result;
